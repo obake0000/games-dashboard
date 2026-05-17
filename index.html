@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>obake0000 games — アクセス解析ダッシュボード</title>
+<style>
+  :root {
+    --bg: #0e1116; --panel: #161b22; --line: #30363d;
+    --ink: #e6edf3; --dim: #8b949e; --hint: #6e7681;
+    --accent: #ff7b72; --good: #3fb950; --warn: #d29922; --bad: #f85149;
+    --link: #58a6ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px;
+    background: var(--bg); color: var(--ink);
+    font-family: "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 1280px; margin: 0 auto; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h1 .sub { color: var(--dim); font-size: 14px; font-weight: normal; margin-left: 12px; }
+  h2 { font-size: 18px; margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code { background: var(--panel); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+
+  .summary-row {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-top: 16px;
+  }
+  .stat {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .stat .label { color: var(--dim); font-size: 12px; }
+  .stat .value { font-size: 24px; font-weight: bold; margin-top: 4px; }
+  .stat .delta { font-size: 12px; color: var(--good); }
+
+  .game-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .game-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 14px 16px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .game-card .name { font-weight: bold; font-size: 15px; }
+  .game-card .url { font-size: 12px; color: var(--link); word-break: break-all; }
+  .game-card .meta { font-size: 12px; color: var(--dim); display: flex; gap: 12px; flex-wrap: wrap; }
+  .badge {
+    display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 11px;
+    border: 1px solid var(--line);
+  }
+  .badge.ok { color: var(--good); border-color: var(--good); }
+  .badge.warn { color: var(--warn); border-color: var(--warn); }
+  .badge.bad { color: var(--bad); border-color: var(--bad); }
+  .badge.dim { color: var(--dim); }
+
+  .actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    padding: 4px 10px; font-size: 12px; border-radius: 6px;
+    background: var(--line); color: var(--ink); border: 1px solid var(--line);
+    cursor: pointer; text-decoration: none;
+  }
+  .btn:hover { background: #444c56; text-decoration: none; }
+  .btn.primary { background: #1f6feb; border-color: #1f6feb; }
+
+  .looker-frame {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px; min-height: 600px;
+  }
+  .looker-frame iframe {
+    width: 100%; height: 720px; border: 0; border-radius: 6px;
+    background: #1a1a1a;
+  }
+  .looker-placeholder {
+    height: 600px; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 12px; color: var(--dim); text-align: center;
+  }
+  .looker-placeholder .big { font-size: 48px; }
+
+  .nav {
+    display: flex; gap: 16px; margin: 12px 0 24px;
+    padding: 12px 16px;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+    font-size: 13px;
+  }
+  .nav a { color: var(--ink); }
+  .nav .step { color: var(--dim); }
+  .nav .step.done { color: var(--good); }
+  .nav .step.pending { color: var(--warn); }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  th { color: var(--dim); font-weight: normal; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>obake0000 games <span class="sub">アクセス解析ダッシュボード — GA4 + SEO 集約</span></h1>
+
+<div class="nav">
+  <span class="step done">✓ SEOメタタグ注入</span>
+  <span class="step done">✓ sitemap/robots配置</span>
+  <span class="step pending">… GA4 ID差し込み待ち</span>
+  <span class="step pending">… Looker Studio設定待ち</span>
+  <span class="step pending">… git push 9 リポジトリ</span>
+</div>
+
+<h2>サマリー（GA4反映後に自動更新）</h2>
+<div class="summary-row">
+  <div class="stat"><div class="label">登録ゲーム</div><div class="value">9</div><div class="delta">GitHub Pages 7 / Vercel 2</div></div>
+  <div class="stat"><div class="label">SEOメタタグ済み</div><div class="value">7 / 9</div><div class="delta">Vercel 2 はローカルパス未確認</div></div>
+  <div class="stat"><div class="label">直近7日PV</div><div class="value">—</div><div class="delta">GA4セットアップ待ち</div></div>
+  <div class="stat"><div class="label">直近7日UU</div><div class="value">—</div><div class="delta">GA4セットアップ待ち</div></div>
+</div>
+
+<h2>ゲーム一覧</h2>
+<div class="game-grid">
+
+  <div class="game-card">
+    <div class="name">トイレ防衛隊：清潔圏崩壊</div>
+    <a class="url" href="https://obake0000.github.io/toilet-tower-defense/" target="_blank">obake0000.github.io/toilet-tower-defense/</a>
+    <div class="meta">
+      <span class="badge ok">SEO ✓</span>
+      <span class="badge ok">sitemap ✓</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">タワーディフェンス / 防衛 / 90秒</div>
+  </div>
+
+  <div class="game-card">
+    <div class="name">看護師もーむり退職ゲーム</div>
+    <a class="url" href="https://obake0000.github.io/nurse-survival-game/" target="_blank">obake0000.github.io/nurse-survival-game/</a>
+    <div class="meta">
+      <span class="badge ok">SEO ✓</span>
+      <span class="badge ok">sitemap ✓</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">サバイバル / 看護師 / 夜勤</div>
+  </div>
+
+  <div class="game-card">
+    <div class="name">歌舞伎町ローソンファイト</div>
+    <a class="url" href="https://obake0000.github.io/kabukicho-fighter/" target="_blank">obake0000.github.io/kabukicho-fighter/</a>
+    <div class="meta">
+      <span class="badge ok">SEO ✓</span>
+      <span class="badge ok">sitemap ✓</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">アクション / コンビニ / 殴らない</div>
+  </div>
+
+  <div class="game-card">
+    <div class="name">死ぬ前に3分だけ神になれる</div>
+    <a class="url" href="https://obake0000.github.io/sanpun-shinde-warau/" target="_blank">obake0000.github.io/sanpun-shinde-warau/</a>
+    <div class="meta">
+      <span class="badge ok">SEO ✓</span>
+      <span class="badge ok">sitemap ✓</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">ナラティブ短編 / 4分 / ブラックエンド</div>
+  </div>
+
+  <div class="game-card">
+    <div class="name">マチアプRPG</div>
+    <a class="url" href="https://obake0000.github.io/machiapu-rpg/game.html" target="_blank">obake0000.github.io/machiapu-rpg/game.html</a>
+    <div class="meta">
+      <span class="badge ok">SEO ✓</span>
+      <span class="badge ok">sitemap ✓</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">RPG / マッチングアプリ / 運用</div>
+  </div>
+
+  <div class="game-card">
+    <div class="name">シフト表テトリス</div>
+    <a class="url" href="https://obake0000.github.io/shift-tetris/" target="_blank">obake0000.github.io/shift-tetris/</a>
+    <div class="meta">
+      <span class="badge ok">SEO ✓</span>
+      <span class="badge ok">sitemap ✓</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">パズル / シフト / 店長</div>
+  </div>
+
+  <div class="game-card">
+    <div class="name">ジェミニ防衛戦</div>
+    <a class="url" href="https://obake0000.github.io/gemini-at-the-stake/" target="_blank">obake0000.github.io/gemini-at-the-stake/</a>
+    <div class="meta">
+      <span class="badge ok">SEO ✓</span>
+      <span class="badge ok">sitemap ✓</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">タワーディフェンス / AI / 著作権</div>
+  </div>
+
+  <div class="game-card">
+    <div class="name">ハニーファイト</div>
+    <a class="url" href="https://honey-fight-codex.vercel.app/" target="_blank">honey-fight-codex.vercel.app</a>
+    <div class="meta">
+      <span class="badge bad">SEO 未</span>
+      <span class="badge dim">sitemap —</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">Vercel / ローカルパス未確認</div>
+  </div>
+
+  <div class="game-card">
+    <div class="name">せどりサバイバー</div>
+    <a class="url" href="https://sedori-survivors.vercel.app/" target="_blank">sedori-survivors.vercel.app</a>
+    <div class="meta">
+      <span class="badge bad">SEO 未</span>
+      <span class="badge dim">sitemap —</span>
+      <span class="badge warn">GA4 待ち</span>
+    </div>
+    <div class="meta">Vercel / ローカルパス未確認</div>
+  </div>
+
+</div>
+
+<h2>GA4 ダッシュボード（Looker Studio）</h2>
+<div class="looker-frame">
+  <!--
+    GA4 setup 完了後、Looker Studio で:
+      1) 新規レポート → データソース「Google Analytics」を追加し プロパティを選択
+      2) ページ追加: 概要 / 流入元 / 行動フロー / ゲーム別比較 (Dimension: page_path で分岐)
+      3) 右上「共有」→「埋め込み」→「埋め込みURL有効化」→ iframe コピー
+      4) 下記 src を差し替え
+  -->
+  <!-- <iframe src="https://lookerstudio.google.com/embed/reporting/XXXXXXXX/page/YYYY"></iframe> -->
+  <div class="looker-placeholder">
+    <div class="big">📊</div>
+    <div>Looker Studio ダッシュボードはまだ設定されていません。</div>
+    <div style="font-size:12px;">GA4 のデータが入り始めたら Looker Studio で iframe URL を取得し、<br>
+    index.html の <code>looker-frame</code> 内のコメントを解除してください。</div>
+  </div>
+</div>
+
+<h2>セットアップ手順（残タスク）</h2>
+<table>
+  <tr><th>順</th><th>作業</th><th>担当</th><th>場所</th></tr>
+  <tr><td>1</td><td>GA4プロパティ作成 → Measurement ID 取得</td><td>ユーザー</td><td>analytics.google.com</td></tr>
+  <tr><td>2</td><td><code>inject_seo.py</code> の <code>GA4_ID</code> 差し替え → 再実行</td><td>Claude</td><td>c:/gm/games-dashboard/</td></tr>
+  <tr><td>3</td><td>Vercel 2ゲームのローカルパス確認 → SEO/GA4 注入</td><td>ユーザー+Claude</td><td>—</td></tr>
+  <tr><td>4</td><td>各リポジトリ commit + push</td><td>Claude</td><td>7+リポジトリ</td></tr>
+  <tr><td>5</td><td>GA4 → Looker Studio 連携 → iframe URL 取得</td><td>ユーザー</td><td>lookerstudio.google.com</td></tr>
+  <tr><td>6</td><td><code>index.html</code> の Looker iframe コメント解除</td><td>Claude</td><td>c:/gm/games-dashboard/</td></tr>
+  <tr><td>7</td><td>games-dashboard を GitHub Pages として公開</td><td>Claude</td><td>新規リポジトリ</td></tr>
+</table>
+
+<h2>関連ドキュメント</h2>
+<ul>
+  <li><a href="keywords.md">keywords.md</a> — 9ゲームのキーワード戦略マトリクス</li>
+  <li><a href="README.md">README.md</a> — このダッシュボードの設計と運用</li>
+  <li><code>inject_seo.py</code> — SEO+GA4タグ注入スクリプト</li>
+  <li><code>generate_sitemaps.py</code> — sitemap.xml + robots.txt 生成スクリプト</li>
+</ul>
+
+</div>
+</body>
+</html>
