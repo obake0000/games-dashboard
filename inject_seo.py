@@ -22,7 +22,7 @@ import json
 from pathlib import Path
 
 # === ここを編集 ===
-GA4_ID = "G-XXXXXXXXXX"  # ユーザーから受領したら差し替え
+GA4_ID = "G-8GX72G63E2"  # obake0000 games (受領 2026-05-18)
 
 GAMES = [
     {
